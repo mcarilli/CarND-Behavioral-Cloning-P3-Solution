@@ -2,11 +2,18 @@
 
 The goals / steps of this project are the following:
 * Use the simulator to collect data of good driving behavior
-* Build, a convolution neural network in Keras that predicts steering angles from images
+* Build a convolution neural network in Keras that predicts steering angles from images
 * Train and validate the model with a training and validation set
 * Test that the model successfully drives around track one without leaving the road
 * Summarize the results with a written report
 
+The Keras implementation of my model can be found in model.py.  
+model.h5 is a saved Keras model containing a version of my trained network
+that reliably steers the car all the way around the track in my tests.
+
+video.mp4 shows model.h5 in action.
+
+Rubric points are addressed individually below.
 
 [//]: # (Image References)
 
@@ -18,21 +25,21 @@ The goals / steps of this project are the following:
 [image6]: ./writeup_images/placeholder_small.png "Normal Image"
 [image7]: ./writeup_images/placeholder_small.png "Flipped Image"
 
-## Rubric Points
 ---
 ### Files Submitted & Code Quality
 
 #### 1. Submission includes all required files and can be used to run the simulator in autonomous mode
 
 My project includes the following files:
-* model.py containing the script to create and train the model
-* drive.py for driving the car in autonomous mode
-* model.h5 containing a trained convolution neural network 
-* writeup_report.md or writeup_report.pdf summarizing the results
+* model.py:  Keras implementation of model, as well as code to load data and train the model
+* drive.py: Connects to Udacity simulator (not provided) to feed image data from the simulator to my model, and angle data from my model back to the simulator
+* model.h5:  A saved Keras model, trained using model.py, capable of reliably steering the car all the way around Track 1
+* video.mp4: Video of the car driving around the track, with steering data supplied by model.h5
+* writeup_report.md
 
 #### 2. Submission includes functional code
 
-Once you have cloned this repository, start the Udacity simulator (not provided),
+If you clone this repository, start the Udacity simulator (not provided),
 and run
 ```sh
 python drive.py model.h5
@@ -48,7 +55,7 @@ Please refer to model.py.
 
 #### 1. An appropriate model architecture has been employed
 
-My model is a Keras implementation of the Nvidia convolutional neural network designed specifically to generate
+My final model is a Keras implementation of the Nvidia convolutional neural network designed specifically to generate
 steering data for self-driving cars based on camera inputs.  See "Final model architecture" below for a description of the layers.
 
 #### 2. Attempts to reduce overfitting in the model
@@ -59,9 +66,10 @@ validation set was comparable to loss on the test set at the end of training.  A
 training set was large enough to allow the model to generalize to the validation data as well, even without dropout
 layers.
 
-I also made sure to monitor the loss while the network was training to make sure the loss was not increasing for later epochs.
+I also made sure to monitor loss while the network was training to make sure 
+validation loss was not increasing for later epochs.
 
-####3. Model parameter tuning
+#### 3. Model parameter tuning
 
 I used an Adams optimizer, so tuning learning rate was not necessary.  The one parameter I did tune was the correction
 angle added to (subtracted from) the driving angle to pair with an image from the left (right) camera.
@@ -73,16 +81,16 @@ The model.h5 file accompanying this submission was trained with a correction ang
 Sometimes it approaches the side of the road, or sways side to side, but corrects itself robustly.  I actually like the mild
 swaying, because it shows the car knows how to recover.
 
-####4. Appropriate training data
+#### 4. Appropriate training data
 
 See Creation of the Training Set below.
 
-###Model Architecture and Training Strategy
+### Model Architecture and Training Strategy
 
-####1. Solution Design Approach
+#### 1. Solution Design Approach
 
-All training was conducted on my laptop, which has TensorFlow equipped 
-to use an Nvidia Geforce GTX 960M GPU (Maxwell architecture).
+All training was conducted on my laptop.  I've set up TensorFlow to use my installed GPU
+(an Nvidia Geforce GTX 960M GPU, Maxwell architecture).
 
 I began by training a 1-layer fully connected network, using only data from the center camera,
 just to get the data pipeline working.  
@@ -91,37 +99,42 @@ Next I implemented LeNet in Keras, to see how it would perform.
 I trained LeNet using only data from the center camera. 
 It sometimes got the car around the first corner and onto the bridge.
 
+Next I implemented a cropping layer as the first layer in my network.  This removed the top 50
+and bottom 20 pixels from each input image before passing the image on to the convolution layers.
+The top 50 pixels tended to contain sky/trees/horizon, and the bottom 20 pixels contained the car's
+hood, all of which are irrelevant to steering and might confuse the model.
+
 I then decided to augment the training dataset by additionally using images from the left and right cameras,
 as well as a left-right flipped version of the center camera's image.
 This entire training+validation dataset was too large to store in my computer's RAM:
 8036 samples x 320x160x3 x 4 bytes per float x 4 images (center,left,right,flipped) = about 20 GB.
-It began swapping RAM to the hard drive while running, which made the code infeasibly slow.
+model.py began swapping RAM to the hard drive while running, which made the code infeasibly slow.
 I implemented Python generators to serve training and validation data to model.fit_generator().
-This made the code run much faster and more smoothly.
-However, the car still failed at one of the two sharp curves after the bridge.
+This made model.py run much faster and more smoothly.
+However, the car still failed at the first of the two sharp curves after the bridge.
 
 I then implemented the Nvidia neural network architecture found here:
 [https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/).  
-This network was purpose-built for end-to-end training of self-driving car steering based on input from
+This network is purpose-built for end-to-end training of self-driving car steering based on input from
 cameras, so it is ideal for the simulator. 
 
-The only remaining step was to tune the correction applied to the angle associated with the right and left camera images,
-as described in "Model parameter tuning" above.  I found that the trained network reliably steered the car all the way around the 
+The only remaining step was to tune the correction applied to the angle associated with the right and left camera images.
+I found that the trained network reliably steered the car all the way around the 
 track for several different choices of correction angle.  It was really cool to see how the choice of correction angle influenced
 the car's handling.  As I noted earlier, training the network with high correction angles resulted in quick, sharp response to turns, but
 also a tendency to overcorrect. Training with smaller correction angles resulted in less swaying back and forth across the road,
 but also a gentler (sometimes too gentle) response to sharp turns.
 
-Actually, it was incredibly cool to see the whole thing work, although frustrating at times...but we won't go into that.
+Actually, it was incredibly cool to see the whole thing work.  It was frustrating at times too...but we won't go into that.
 
 
-####2. Final Model Architecture
+#### 2. Final Model Architecture
 
 
 
 ![alt text][image1]
 
-####3. Creation of the Training Set & Training Process
+#### 3. Creation of the Training Set & Training Process
 
 Unfortunately, I had trouble recording my own training data on my system (Ubuntu 16.04).  When I tried to select an output
 directory from within linux_sim.x86_64, the directory appeared red, and the executable did nothing:
@@ -148,7 +161,7 @@ right (left).  Therefore, to create the angle data for the left camera,
 I took the current driving angle and added a correction; to create the angle data for the right camera, I took the driving 
 angle and subtracted a correction. 
 Using the left and right images this way should aid the car in recovery when the center-camera's image
-(which is what is fed to my network in autonomous mode) veers too far to the left or right. 
+(which is what is fed to the network in autonomous mode) veers too far to the left or right. 
 
 The angle corresponding to the flipped image was the negative of the current driving angle.
 Because the track is counterclockwise, the unaugmented training data contains more left turns than right turns.
@@ -169,14 +182,15 @@ training data would not be fed to the network in the same order.
 ![right camera][right]
 ![center flipped][flipped]
 
-The data set provided 8036 samples, each of which had a center, left, and right image, and I augmented the set 
-by flipping the center image.  sklearn.model_selection.train_test_split() was used to split off 20% of the 
-data to use for validation.
-Therefore, my network was trained on a total of 25,712 data pairs, and validated on a total of 6432 image+angle pairs.
+The data set provided 8036 samples, each of which had a path to a center, left, and right image.
+sklearn.model_selection.train_test_split() was used to split off 20% of the samples to use for validation.
+For each sample, the center-flipped image was created on the fly within the generator.
+Therefore, my network was trained on a total of 
+floor(8036x0.8) x 4 = 25,712 image+angle pairs, and validated on a total of 6432 image+angle pairs.
 
 A separate generator was created for training data and validation data. Tthe training generator provided images and angles
 derived from samples in the training set, while the validation generator provided images and data derived from samples 
-in the validation set).
+in the validation set.
 
 I trained the model for 5 epochs using an Adams optimizer, which was probably more than necessary, but I wanted to be sure the validation error was plateauing.
 I did make sure the validation error was not increasing for later epochs.
