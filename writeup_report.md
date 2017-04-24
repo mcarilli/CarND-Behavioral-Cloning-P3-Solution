@@ -231,5 +231,5 @@ derived from samples in the training set, while the validation generator provide
 in the validation set.
 
 I trained the model for 5 epochs using an Adams optimizer, which was probably more epochs than necessary, but I wanted to be sure the validation error was plateauing.
-I did make sure the validation error was not increasing for later epochs.
+As noted previously, I did make sure the validation error was not increasing for later epochs.
 
