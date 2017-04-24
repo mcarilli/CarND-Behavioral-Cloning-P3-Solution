@@ -175,16 +175,20 @@ The generator also shuffled the array containing the training samples prior to e
 training data would not be fed to the network in the same order.
 
 Example image from center camera:
+
 ![center camera][center]
 
 Image at same time sample from left camera:
+
 ![left camera][left]
 
 Image at same time sample from right camera:
+
 ![right camera][right]
 
-Image from center camera, flipped left<->right
-![center flipped][flipped]
+Image from center camera, flipped left<->right:
+
+![center flipped][centerflipped]
 
 The data set provided 8036 samples, each of which had a path to a center, left, and right image.
 sklearn.model_selection.train_test_split() was used to split off 20% of the samples to use for validation.
