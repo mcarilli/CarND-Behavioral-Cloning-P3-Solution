@@ -17,13 +17,11 @@ Rubric points are addressed individually below.
 
 [//]: # (Image References)
 
-[recordingerror]: ./writeup_images/.png "Problem recording to directory"
-[center]: ./writeup_images/placeholder.png "Image from center camera"
-[left]: ./writeup_images/placeholder_small.png "Image from left camera"
-[right]: ./writeup_images/placeholder_small.png "Image from right camera"
-[centerflipped]: ./writeup_images/placeholder_small.png "Image from center camera, flipped left<->right"
-[image6]: ./writeup_images/placeholder_small.png "Normal Image"
-[image7]: ./writeup_images/placeholder_small.png "Flipped Image"
+[recordingerror]: ./writeup_images/recording_fails.png "Problem recording to directory"
+[center]: ./writeup_images/center.png "Image from center camera"
+[left]: ./writeup_images/left.png "Image from left camera"
+[right]: ./writeup_images/right.png "Image from right camera"
+[centerflipped]: ./writeup_images/center_flipped.png "Image from center camera, flipped left<->right"
 
 ---
 ### Files Submitted & Code Quality
@@ -142,8 +140,8 @@ directory from within linux_sim.x86_64, the directory appeared red, and the exec
 ![Recording error][recordingerror]
 
 Choice of directory did not appear to matter.  
-The only thing I could think of was that it was a permissions issue, but I chmod 777ed my output
-directory, and even ran the simulator as root, and the problem persisted.
+The only thing I could think of was that it was a permissions issue.  I chmod 777ed my output
+directory, and even ran the simulator as root, but the problem persisted.
 
 
 I therefore decided to use the provided training data, which was read in from driving_log.csv.
@@ -176,17 +174,23 @@ a center-camera, left-camera, right-camera, and center-camera-flipped image).
 The generator also shuffled the array containing the training samples prior to each epoch, so that 
 training data would not be fed to the network in the same order.
 
-
+Example image from center camera:
 ![center camera][center]
+
+Image at same time sample from left camera:
 ![left camera][left]
+
+Image at same time sample from right camera:
 ![right camera][right]
+
+Image from center camera, flipped left<->right
 ![center flipped][flipped]
 
 The data set provided 8036 samples, each of which had a path to a center, left, and right image.
 sklearn.model_selection.train_test_split() was used to split off 20% of the samples to use for validation.
 For each sample, the center-flipped image was created on the fly within the generator.
 Therefore, my network was trained on a total of 
-floor(8036x0.8) x 4 = 25,712 image+angle pairs, and validated on a total of 6432 image+angle pairs.
+floor(8036x0.8) x 4 = 25,712 image+angle pairs, and validated on a total of floor(8036x0.2) x 4 = 6432 image+angle pairs.
 
 A separate generator was created for training data and validation data. Tthe training generator provided images and angles
 derived from samples in the training set, while the validation generator provided images and data derived from samples 
