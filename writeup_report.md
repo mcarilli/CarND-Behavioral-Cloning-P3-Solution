@@ -226,7 +226,7 @@ For each sample, the center-flipped image was created on the fly within the gene
 Therefore, my network was trained on a total of 
 floor(8036x0.8) x 4 = 25,712 image+angle pairs, and validated on a total of ceil(8036x0.2) x 4 = 6432 image+angle pairs.
 
-A separate generator was created for training data and validation data. Tthe training generator provided images and angles
+A separate generator was created for training data and validation data. The training generator provided images and angles
 derived from samples in the training set, while the validation generator provided images and data derived from samples 
 in the validation set.
 
