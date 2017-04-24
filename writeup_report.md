@@ -105,7 +105,7 @@ hood, all of which are irrelevant to steering and might confuse the model.
 I then decided to augment the training dataset by additionally using images from the left and right cameras,
 as well as a left-right flipped version of the center camera's image.
 This entire training+validation dataset was too large to store in my computer's RAM:
-8036 samples x 320x160x3 x 4 bytes per float x 4 images (center,left,right,flipped) = about 20 GB.
+8036 samples x 160x320x3 x 4 bytes per float x 4 images (center,left,right,flipped) = about 20 GB.
 model.py began swapping RAM to the hard drive while running, which made the code infeasibly slow.
 I implemented Python generators to serve training and validation data to model.fit_generator().
 This made model.py run much faster and more smoothly.
@@ -128,9 +128,37 @@ Actually, it was incredibly cool to see the whole thing work.  It was frustratin
 
 #### 2. Final Model Architecture
 
+Output heights for convolution layers were computed using 
+out_height = ceil( ( in_height - kernel_height + 1 )/stride_height
+Widths were computed similarly.  
+When adding a layer, Keras automatically computes the output shape of the previous layer, so 
+it is not necessary to carry out this calculation manually in the code. 
 
+| Layer                         |     Description                       |
+|:---------------------:|:---------------------------------------------:|
+| Input                 | 160x320x3 RGB image                                      A
+| Cropping              | Crop top 50 pixels and bottom 20 pixels; output shape = 90x320x3 |
+| Normalization         | Each new pixel value = old pixel value/255 - 0.5      |
+| Convolution 5x5       | 5x5 kernel, 2x2 stride, 24 output channels, output shape = 43x158x24  |
+| RELU                  |                                                       |
+| Convolution 5x5       | 5x5 kernel, 2x2 stride, 36 output channels, output shape = 20x77x36   |
+| RELU                  |                                                       |
+| Convolution 5x5       | 5x5 kernel, 2x2 stride, 48 output channels, output shape = 8x37x48    |
+| RELU                  |                                                       |
+| Convolution 5x5       | 3x3 kernel, 1x1 stride, 64 output channels, output shape = 6x35x64    |
+| RELU                  |                                                       |
+| Convolution 5x5       | 3x3 kernel, 1x1 stride, 64 output channels, output shape = 4x33x64    |
+| RELU                  |                                                       |
+| Flatten               | Input 4x33x64, output 8448    |
+| Fully connected       | Input 8448, output 100        |
+| Fully connected       | Input 100, output 50          |
+| Fully connected       | Input 50, output 10           |
+| Fully connected       | Input 10, output 1 (labels)   |
 
-![alt text][image1]
+If my layer size math is correct, it does seem like the first fully connected layer has a very large number of parameters
+(8448x100) and therefore might overfit.
+If I were to tweak the model, I would start by putting a dropout layer after that layer.
+However, for this project, the model works fine as-is.
 
 #### 3. Creation of the Training Set & Training Process
 
@@ -194,12 +222,12 @@ The data set provided 8036 samples, each of which had a path to a center, left, 
 sklearn.model_selection.train_test_split() was used to split off 20% of the samples to use for validation.
 For each sample, the center-flipped image was created on the fly within the generator.
 Therefore, my network was trained on a total of 
-floor(8036x0.8) x 4 = 25,712 image+angle pairs, and validated on a total of floor(8036x0.2) x 4 = 6432 image+angle pairs.
+floor(8036x0.8) x 4 = 25,712 image+angle pairs, and validated on a total of ceil(8036x0.2) x 4 = 6432 image+angle pairs.
 
 A separate generator was created for training data and validation data. Tthe training generator provided images and angles
 derived from samples in the training set, while the validation generator provided images and data derived from samples 
 in the validation set.
 
-I trained the model for 5 epochs using an Adams optimizer, which was probably more than necessary, but I wanted to be sure the validation error was plateauing.
+I trained the model for 5 epochs using an Adams optimizer, which was probably more epochs than necessary, but I wanted to be sure the validation error was plateauing.
 I did make sure the validation error was not increasing for later epochs.
 
