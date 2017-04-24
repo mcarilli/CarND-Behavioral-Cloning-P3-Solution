@@ -130,8 +130,9 @@ Actually, it was incredibly cool to see the whole thing work.  It was frustratin
 
 For informational purposes, output dimensions of convolution layers are shown,
 with output heights computed according to
-out_height = ceil( ( in_height - kernel_height + 1 )/stride_height
+out_height = ceil( ( in_height - kernel_height + 1 )/stride_height.
 Output widths are computed similarly.  
+
 When adding a layer, Keras automatically computes the output shape of the previous layer, so 
 it is not necessary to compute output dimensions manually in the code. 
 
