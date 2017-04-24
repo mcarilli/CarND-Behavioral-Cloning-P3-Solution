@@ -8,6 +8,7 @@ The goals / steps of this project are the following:
 * Summarize the results with a written report
 
 The Keras implementation of my model can be found in model.py.  
+
 model.h5 is a saved Keras model containing a version of my trained network
 that reliably steers the car all the way around the track in my tests.
 
@@ -59,7 +60,7 @@ steering data for self-driving cars based on camera inputs.  See "Final model ar
 #### 2. Attempts to reduce overfitting in the model
 
 I split the data into training and validation sets to diagnose overfitting, but when I used the fully augmented data set 
-(described in Creation of the Training Set) below, overfitting did not appear to be a significant problem.  Loss on the 
+(described in "Creation of the Training Set" below), overfitting did not appear to be a significant problem.  Loss on the 
 validation set was comparable to loss on the test set at the end of training.  Apparently, the (shuffled and augmented)
 training set was large enough to allow the model to generalize to the validation data as well, even without dropout
 layers.
@@ -81,7 +82,7 @@ swaying, because it shows the car knows how to recover.
 
 #### 4. Appropriate training data
 
-See Creation of the Training Set below.
+See "Creation of the Training Set" below.
 
 ### Model Architecture and Training Strategy
 
@@ -105,18 +106,17 @@ hood, all of which are irrelevant to steering and might confuse the model.
 I then decided to augment the training dataset by additionally using images from the left and right cameras,
 as well as a left-right flipped version of the center camera's image.
 This entire training+validation dataset was too large to store in my computer's RAM:
-8036 samples x 160x320x3 x 4 bytes per float x 4 images (center,left,right,flipped) = about 20 GB.
+8036 samples x 160x320x3 x 4 bytes per float x 4 images per sample (center,left,right,flipped) = about 20 GB.
 model.py began swapping RAM to the hard drive while running, which made the code infeasibly slow.
 I implemented Python generators to serve training and validation data to model.fit_generator().
 This made model.py run much faster and more smoothly.
 However, the car still failed at the first of the two sharp curves after the bridge.
 
 I then implemented the Nvidia neural network architecture found here:
-[https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/).  
-This network is purpose-built for end-to-end training of self-driving car steering based on input from
+[https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/](https://devblogs.nvidia.com/parallelforall/deep-learning-self-driving-cars/).  This network is purpose-built for end-to-end training of self-driving car steering based on input from
 cameras, so it is ideal for the simulator. 
 
-The only remaining step was to tune the correction applied to the angle associated with the right and left camera images.
+The only remaining step was to tune the correction applied to the angle associated with the right and left camera images, as described in "Model parameter tuning" above.
 I found that the trained network reliably steered the car all the way around the 
 track for several different choices of correction angle.  It was really cool to see how the choice of correction angle influenced
 the car's handling.  As I noted earlier, training the network with high correction angles resulted in quick, sharp response to turns, but
@@ -128,11 +128,12 @@ Actually, it was incredibly cool to see the whole thing work.  It was frustratin
 
 #### 2. Final Model Architecture
 
-Output heights for convolution layers were computed using 
+For informational purposes, output dimensions of convolution layers are shown,
+with output heights computed according to
 out_height = ceil( ( in_height - kernel_height + 1 )/stride_height
-Widths were computed similarly.  
+Output widths are computed similarly.  
 When adding a layer, Keras automatically computes the output shape of the previous layer, so 
-it is not necessary to carry out this calculation manually in the code. 
+it is not necessary to compute output dimensions manually in the code. 
 
 | Layer                         |     Description                       |
 |:---------------------:|:---------------------------------------------:|
@@ -178,7 +179,7 @@ Each sample contained a relative path to center, left, and right camera images, 
 angle, throttle, brake, and speed data.
 
 For each data sample, I used all three provided images (from the center, left, and right cameras) 
-and also augmented the data with flipped image for the center camera.   
+and also augmented the data with a flipped version of the center camera's image.  
 
 The left (right) camera gives an 
 effective view of what the center camera
