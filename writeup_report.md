@@ -154,14 +154,15 @@ it is not necessary to compute output dimensions manually in the code.
 | RELU                  |                                                       |
 | Flatten               | Input 4x33x64, output 8448    |
 | Fully connected       | Input 8448, output 100        |
+| Dropout               | Set units to zero with probability 0.5 |
 | Fully connected       | Input 100, output 50          |
 | Fully connected       | Input 50, output 10           |
 | Fully connected       | Input 10, output 1 (labels)   |
 
 If my layer size math is correct, it does seem like the first fully connected layer has a very large number of parameters
 (8448x100) and therefore might overfit.
-If I were to tweak the model, I would start by putting a dropout layer after that layer.
-However, for this project, the model works fine as-is.
+I added a dropout layer after the first fully connected layer to guard against this possibility.
+For the record, the network also performs just fine without the dropout layer.
 
 #### 3. Creation of the Training Set & Training Process
 
@@ -213,8 +214,10 @@ were at the point on the road occupied by the left or right camera.
 Say at a given point in time the car is driving with a certain steering angle to stay on the road.  If the car suddenly shifted
 so that the center camera was in the spot formerly occupied by the left camera, the driving angle would have to be adjusted 
 clockwise (a correction added) to stay on the road.  If the car shifted so that the center camera was in the spot
-formerly occupied by the left camera, the driving angle would have to be adjusted counterclockwise (a correction subtracted)
-to stay on the road.  Here's a diagram:
+formerly occupied by the right camera, the driving angle would have to be adjusted counterclockwise (a correction subtracted)
+to stay on the road.  Here's a diagram from the Udacity lesson.  You can see that a line from the left camera's position
+to the same destination is further clockwise, while a line from the right camera's position to the same destination is 
+further counterclockwise. 
 
 ![angle corrections][cameraangles]
 
@@ -222,8 +225,9 @@ Adding the left and right images to the training set paired with corrected angle
 should help the car recover when the center-camera's image
 veers too far to the left or right. 
 
-The angle associated with each flipped image is the negative of the current driving angle.
-Because the track is counterclockwise, the unaugmented training data contains more left turns than right turns.
+The angle associated with each flipped image is the negative of the current driving angle, because
+it is the angle the car should steer if the road were flipped left<->right.
+The track is counterclockwise, so unaugmented training data contains more left turns than right turns.
 Flipping the center-camera image and pairing it with a corresponding flipped angle adds more right-turn data, 
 which should help the model generalize.
 
