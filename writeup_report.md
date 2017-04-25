@@ -188,12 +188,12 @@ Here's an example image from the center camera.
 
 ![center camera][center]
 
-Here's an image at same time sample from left camera.  
+Here's an image at the same time sample from the left camera.  
 This image also approximates what the center camera would see if the car were too far to the left.
 
 ![left camera][left]
 
-Here's an image at same time sample from the right camera.  
+Here's an image at the same time sample from the the right camera.  
 This image also approximates what the center camera would see if the car were too far to the right.
 
 ![right camera][right]
