@@ -23,7 +23,7 @@ Rubric points are addressed individually below.
 [left]: ./writeup_images/left.png "Image from left camera"
 [right]: ./writeup_images/right.png "Image from right camera"
 [centerflipped]: ./writeup_images/center_flipped.png "Image from center camera, flipped left<->right"
-[cameraangle]: ./writeup_images/cameraangle.png "Diagram of why a correction must be applied to left and right camera images"
+[cameraangles]: ./writeup_images/cameraangles.png "Diagram of why a correction must be applied to left and right camera images"
 
 ---
 ### Files Submitted & Code Quality
@@ -216,7 +216,7 @@ clockwise (a correction added) to stay on the road.  If the car shifted so that 
 formerly occupied by the left camera, the driving angle would have to be adjusted counterclockwise (a correction subtracted)
 to stay on the road.  Here's a diagram:
 
-![angle correction][cameraangle]
+![angle corrections][cameraangles]
 
 Adding the left and right images to the training set paired with corrected angles 
 should help the car recover when the center-camera's image
