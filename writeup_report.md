@@ -23,6 +23,7 @@ Rubric points are addressed individually below.
 [left]: ./writeup_images/left.png "Image from left camera"
 [right]: ./writeup_images/right.png "Image from right camera"
 [centerflipped]: ./writeup_images/center_flipped.png "Image from center camera, flipped left<->right"
+[cameraangle]: ./writeup_images/cameraangle.png "Diagram of why a correction must be applied to left and right camera images"
 
 ---
 ### Files Submitted & Code Quality
@@ -182,16 +183,46 @@ angle, throttle, brake, and speed data.
 For each data sample, I used all three provided images (from the center, left, and right cameras) 
 and also augmented the data with a flipped version of the center camera's image.  
 
-The left (right) camera gives an 
-effective view of what the center camera
-should see if the car is too far to the left (right); in such cases the car should correct by veering to the 
-right (left).  Therefore, to create the angle data for the left camera,
-I took the current driving angle and added a correction; to create the angle data for the right camera, I took the driving 
-angle and subtracted a correction. 
-Using the left and right images this way should aid the car in recovery when the center-camera's image
-(which is what is fed to the network in autonomous mode) veers too far to the left or right. 
+Here's an example image from the center camera.
 
-The angle corresponding to the flipped image was the negative of the current driving angle.
+![center camera][center]
+
+Here's an image at same time sample from left camera.  
+This image also approximates what the center camera would see if the car were too far to the left.
+
+![left camera][left]
+
+Here's an image at same time sample from the right camera.  
+This image also approximates what the center camera would see if the car were too far to the right.
+
+![right camera][right]
+
+Here's the image from the center camera, flipped left<->right.
+
+![center flipped][centerflipped]
+
+When the car is driving in the simulator, it will be fed data from the center camera only.
+The left (right) camera gives an effective 
+view of what the center camera
+would see if the car is too far to the left (right); in such cases the car should correct by veering to the 
+right (left).  Therefore, when we add the left and right camera images to the training and validation sets, we should
+associate angles with them that represent what the steering angle should be if the center camera were seeing 
+the image recorded by the left or right camera, in other words, what the car should do if the center camera
+were at the point on the road occupied by the left or right camera.
+
+Say at a given point in time the car is driving with a certain steering angle to stay on the road.  If the car suddenly shifted
+so that the center camera was in the spot formerly occupied by the left camera, the driving angle would have to be adjusted 
+clockwise (a correction added) to stay on the road.  If the car shifted so that the center camera was in the spot
+formerly occupied by the left camera, the driving angle would have to be adjusted counterclockwise (a correction subtracted)
+to stay on the road.  Here's a diagram:
+
+![angle correction][cameraangle]
+
+Adding the left and right images to the training set paired with corrected angles 
+should help the car recover when the center-camera's image
+veers too far to the left or right. 
+
+The angle associated with each flipped image is the negative of the current driving angle.
 Because the track is counterclockwise, the unaugmented training data contains more left turns than right turns.
 Flipping the center-camera image and pairing it with a corresponding flipped angle adds more right-turn data, 
 which should help the model generalize.
@@ -204,21 +235,6 @@ a center-camera, left-camera, right-camera, and center-camera-flipped image).
 The generator also shuffled the array containing the training samples prior to each epoch, so that 
 training data would not be fed to the network in the same order.
 
-Example image from center camera:
-
-![center camera][center]
-
-Image at same time sample from left camera:
-
-![left camera][left]
-
-Image at same time sample from right camera:
-
-![right camera][right]
-
-Image from center camera, flipped left<->right:
-
-![center flipped][centerflipped]
 
 The data set provided 8036 samples, each of which had a path to a center, left, and right image.
 sklearn.model_selection.train_test_split() was used to split off 20% of the samples to use for validation.

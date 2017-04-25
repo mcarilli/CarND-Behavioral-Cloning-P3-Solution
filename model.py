@@ -128,6 +128,9 @@ model.add( Convolution2D( 64, 3, 3, subsample=(1,1), activation = 'relu' ) )
 model.add( Flatten() )
 # Fully connected layers
 model.add( Dense( 100 ) )
+model.add(Dropout(0.5)) # I added this dropout layer myself, because the previous 
+                        # fully connected layers has a lot of free parameters 
+                        # and seems like the layer most in danger of overfitting. 
 model.add( Dense( 50 ) )
 model.add( Dense( 10 ) )
 model.add( Dense( 1 ) )
