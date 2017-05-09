@@ -1,5 +1,5 @@
 # CarND-Behavioral-Cloning-P3-Solution
-Udacity self-driving car nanodegree Project 3 solution: neural network that drives a simulated car around a track autonomously.  The network is trained on recorded behavior of a human driver.
+Udacity self-driving car nanodegree Project 3 solution: neural network that drives a simulated car around a track autonomously.  The network is implemented in Keras, and trained on recorded behavior of a human driver.
 
 The goals / steps of this project are the following:
 * Use the simulator to collect data of good driving behavior
