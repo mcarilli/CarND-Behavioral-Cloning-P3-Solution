@@ -1,6 +1,8 @@
 # CarND-Behavioral-Cloning-P3-Solution
 Udacity self-driving car nanodegree Project 3 solution: neural network that drives a simulated car around a track autonomously.  The network is implemented in Keras, and trained on recorded behavior of a human driver.
 
+video.mp4 shows the network in action.
+
 The goals / steps of this project are the following:
 * Use the simulator to collect data of good driving behavior
 * Build a convolution neural network in Keras that predicts steering angles from images
@@ -12,8 +14,6 @@ The Keras implementation of my model can be found in model.py.
 
 model.h5 is a saved Keras model containing a version of my trained network
 that reliably steers the car all the way around the track in my tests.
-
-video.mp4 shows model.h5 in action.
 
 Rubric points are addressed individually below.
 
